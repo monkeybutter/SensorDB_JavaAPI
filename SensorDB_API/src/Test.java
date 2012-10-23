@@ -12,47 +12,53 @@ public class Test {
 	 */
 	public static void main(String[] args) throws Exception {	
 			
-		//SensorDB sensor = new SensorDB("http://phenonet.com:9001", "CMAR", "bernido");
+		// Call to constructor with login details
 		SensorDB sensor = new SensorDB("http://phenonet.com:9001", "CMAR", "CMARCMAR");
 		
+		// Create experiment with name CMAR
+		sensor.createExperiment("CMAR", "Australia/Canberra", "Testing Java API to upload CMAR Solar Stations Data", "", "", 0);
+		
+		// Create Node Black Mountain
+		sensor.experiments.get(0).createNode("http://phenonet.com:9001", sensor.session.cookie, "Black Mountain", sensor.experiments.get(0)._id, "Solar Station on Black Mountain", "", "", 0);
+		
+		// Create Stream Temperature 1
+		sensor.experiments.get(0).nodes.get(0).createStream(sensor.session, "Temperature1", sensor.experiments.get(0).nodes.get(0)._id, sensor.getMeasurementId("Celsius"), "Something", "", "");
 		
 		
+		// CSV Files used for the sample have the format BMmm-dd
+		// where mm indicates the month and dd is the day
 		
-		//System.out.println(sensor.experiments.size());
-		//System.out.println(sensor.experiments.get(0).nodes.size());
-		System.out.println(sensor.experiments.get(0).nodes.get(0)._id);
-		
-		//sensor.createExperiment("CMAR", "Australia/Canberra", "Testing Java API to upload CMAR Solar Stations Data", "", "", 0);
-		//sensor.experiments.get(0).createNode("http://phenonet.com:9001", sensor.session.cookie, "Black Mountain", sensor.experiments.get(0)._id, "Solar Station on Black Mountain", "", "", 0);
-		sensor.experiments.get(0).nodes.get(0).deleteStream(sensor.session, "Temperature1");
-		sensor.experiments.get(0).nodes.get(0).createStream(sensor.session, "Temperature1", sensor.experiments.get(0).nodes.get(0)._id, "5084e43cca0df8c312193408", "Something", "", "");
-		
+		// We loop over the 30 files of June
 		System.out.println("First");
 		for (int i=1; i<=30; i++) {
 			StringBuilder file = new StringBuilder("/home/roz016/workspace/SolarProject/CSV/BM06-01.csv");
 			file.replace(45, 47, formatValue(i,2));
 			System.out.println(file.toString());
-			//System.out.println(file.toString());
+			// postData of the csv file 5th column (temperature1)
 			sensor.experiments.get(0).nodes.get(0).streams.get(0).postData(sensor.session, file.toString(), 5);
 		}
-		/*
+		
+		// We loop over the 31 files of July
 		System.out.println("Second");
 		for (int i=1; i<=31; i++) {
 			StringBuilder file = new StringBuilder("/home/roz016/workspace/SolarProject/CSV/BM07-01.csv");
 			file.replace(45, 47, formatValue(i,2));
 			System.out.println(file.toString());
-			//System.out.println(file.toString());
-			sensor.experiments.get(0).nodes.get(0).streams.get(0).postData(sensor.session, file.toString());
+			// postData of the csv file 5th column (temperature1)
+			sensor.experiments.get(0).nodes.get(0).streams.get(0).postData(sensor.session, file.toString(), 5);
 		}
 		
+		// We loop over the 31 files of August
 		System.out.println("Third");
 		for (int i=1; i<=31; i++) {
 			StringBuilder file = new StringBuilder("/home/roz016/workspace/SolarProject/CSV/BM08-01.csv");
 			file.replace(45, 47, formatValue(i,2));
 			System.out.println(file.toString());
-			//System.out.println(file.toString());
-			sensor.experiments.get(0).nodes.get(0).streams.get(0).postData(sensor.session, file.toString());
+			// postData of the csv file 5th column (temperature1)
+			sensor.experiments.get(0).nodes.get(0).streams.get(0).postData(sensor.session, file.toString(), 5);
 		}
+		
+		
 		
 		/*
 		

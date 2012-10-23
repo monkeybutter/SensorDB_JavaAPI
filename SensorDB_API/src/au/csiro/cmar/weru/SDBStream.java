@@ -23,18 +23,18 @@ import au.com.bytecode.opencsv.CSVReader;
 
 public class SDBStream {
 	// Stream Identifier
-	String name;
-	String _id;
-	String nid;
-	String uid;
-	String mid;
-	String description;
-	String picture;
-	String website;
-	String token;
-	String metadata;
-	long created_at;
-	long updated_at;
+	public String name;
+	public String _id;
+	public String nid;
+	public String uid;
+	public String mid;
+	public String description;
+	public String picture;
+	public String website;
+	public String token;
+	public String metadata;
+	public long created_at;
+	public long updated_at;
 
 	public SDBStream(JSONObject json) {
 		name = json.get("name").toString();

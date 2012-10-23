@@ -18,21 +18,21 @@ import org.json.simple.parser.ParseException;
 
 public class SDBNode {
 	// Node Identifier
-	String name;
-	String _id;
-	String eid;
-	String uid;
-	double lat;
-	double lon;
-	double alt;
-	String description;
-	String picture;
-	String website;
-	long created_at;
-	long updated_at;
-	String metadata;
+	public String name;
+	public String _id;
+	public String eid;
+	public String uid;
+	public double lat;
+	public double lon;
+	public double alt;
+	public String description;
+	public String picture;
+	public String website;
+	public long created_at;
+	public long updated_at;
+	public String metadata;
 
-	List<SDBStream> streams = new ArrayList<SDBStream>();
+	public List<SDBStream> streams = new ArrayList<SDBStream>();
 	
 	public SDBNode(JSONObject json) {
 		_id = json.get("_id").toString();

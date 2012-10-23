@@ -17,27 +17,27 @@ import org.json.simple.parser.ParseException;
 
 public class SDBExperiment {
 	// Experiment Identifier
-	String _id;
+	public String _id;
 	// Experiment Name
-	String name;
+	public String name;
 	// Experiment Description
-	String description;
+	public String description;
 	// Experiment User Owner Identifier 
-	String uid;
+	public String uid;
 	// Associated Picture URL
-	String picture;
+	public String picture;
 	// Associated Picture
-	String website;
+	public String website;
 	// Timezone of Experiment
-	String timezone;
+	public String timezone;
 	// Created at
-	long created_at;
+	public long created_at;
 	// Updated at
-	long updated_at;
+	public long updated_at;
 	// Access Restriction [0,1]
-	int access_restriction;
+	public int access_restriction;
 	
-	List<SDBNode> nodes = new ArrayList<SDBNode>();
+	public List<SDBNode> nodes = new ArrayList<SDBNode>();
 	
 	
 	public SDBExperiment(JSONObject json) {

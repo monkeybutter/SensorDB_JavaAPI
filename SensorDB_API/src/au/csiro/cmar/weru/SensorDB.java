@@ -18,10 +18,10 @@ import org.json.simple.parser.ParseException;
 public class SensorDB {
 
 	public SDBSession session = new SDBSession();
-	List<SDBMeasurement> measurements = new ArrayList<SDBMeasurement>();
-	List<SDBUser> users = new ArrayList<SDBUser>();
+	public List<SDBMeasurement> measurements = new ArrayList<SDBMeasurement>();
+	public List<SDBUser> users = new ArrayList<SDBUser>();
 
-	List<SDBExperiment> experiments = new ArrayList<SDBExperiment>();
+	public List<SDBExperiment> experiments = new ArrayList<SDBExperiment>();
 
 	// Minimal constructor for SensorDB
 	// Just can access public services as getMeasurements() and getUsers()
