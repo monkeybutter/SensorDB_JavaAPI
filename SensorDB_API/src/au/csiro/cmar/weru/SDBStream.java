@@ -79,7 +79,7 @@ public class SDBStream {
 
 			for (int j = 0; j < 5000 && (i < dataList.size()); j++) {
 				dataDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-						.parse(dataList.get(i + 1)[0]);
+						.parse(dataList.get(i)[0]);
 				cal = Calendar.getInstance();
 				cal.setTimeZone(TimeZone.getTimeZone("GMT"));
 				cal.setTimeInMillis(dataDate.getTime());
