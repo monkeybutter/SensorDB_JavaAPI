@@ -1,0 +1,27 @@
+
+Welcome to the SensorDB Java API Beta 0.1
+
+This is a beta version as there are a lot of functions that has not being tested yet and others to be modified and extended.
+
+
+
+*Required Libraries:
+
+1.- OpenCSV 2.3
+http://opencsv.sourceforge.net/
+
+2.- Simple JSON
+http://code.google.com/p/json-simple/
+
+
+*Description:
+
+ SensorDB: Core class (contains)
+ 	SDBSession
+ 	List of SDBUser
+ 	List of SDBMeasurement
+	List of SDBExperiment (each SDBExperiment object contains)
+		List of SDBNode (each SDBNode object contains)
+			List of SDBStream
+			
+(Each of the SDBXXXX objects contain the variables of the JSON object defined in the server and some more).
