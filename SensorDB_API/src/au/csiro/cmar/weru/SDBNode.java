@@ -123,10 +123,11 @@ public class SDBNode {
 				sid = streams.get(i)._id;
 				index = i;
 			}
-			
 		}
 		
 		if (sid != null) {
+			
+			System.out.println(sid);
 			
 			URL url = new URL(session.host + "/streams?sid=" + sid);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -135,6 +136,8 @@ public class SDBNode {
 			conn.setRequestMethod("DELETE");
 			conn.setRequestProperty("Cookie", session.cookie);
 
+			
+			System.out.println(conn.getResponseCode());
 			if (conn.getResponseCode() == 200) {
 				streams.remove(index);
 				return true;
@@ -149,5 +152,18 @@ public class SDBNode {
 		else
 			return false;
 		
+	}
+	
+	
+	public SDBStream getStreambyName(String name) throws IOException, ParseException {
+
+		SDBStream stream = null;
+
+		for (int i = 0; i < streams.size(); i++) {
+			if (streams.get(i).name.equals(name)) {
+				stream = streams.get(i);
+			}
+		}
+		return stream;
 	}
 }

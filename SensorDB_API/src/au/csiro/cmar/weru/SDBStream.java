@@ -3,6 +3,7 @@ package au.csiro.cmar.weru;
 import au.csiro.cmar.weru.SDBSession;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,9 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -23,18 +22,18 @@ import au.com.bytecode.opencsv.CSVReader;
 
 public class SDBStream {
 	// Stream Identifier
-	public String name;
-	public String _id;
-	public String nid;
-	public String uid;
-	public String mid;
-	public String description;
-	public String picture;
-	public String website;
-	public String token;
-	public String metadata;
-	public long created_at;
-	public long updated_at;
+	String name;
+	String _id;
+	String nid;
+	String uid;
+	String mid;
+	String description;
+	String picture;
+	String website;
+	String token;
+	String metadata;
+	long created_at;
+	long updated_at;
 
 	public SDBStream(JSONObject json) {
 		name = json.get("name").toString();
@@ -59,55 +58,52 @@ public class SDBStream {
 		List<String[]> dataList = reader.readAll();
 		// Remove headers
 		dataList.remove(0);
-		
-		int i=0;
 
-		while (i < dataList.size()) {
+		int i = 0;
 
-		URL url = new URL(session.host + "/data");
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		conn.setRequestMethod("POST");
-		conn.setDoOutput(true);
-		conn.setUseCaches(false);
-		conn.setRequestProperty("Content-Type", "application/json");
-		conn.setRequestProperty("Accept", "application/json");
-		conn.setRequestProperty("Cookie", session.cookie);
+		while ((i * 60) < dataList.size()) {
 
-		JSONObject data = new JSONObject();
-		Date dataDate;
-		Calendar cal;
-
-			for (int j = 0; j < 5000 && (i < dataList.size()); j++) {
-				dataDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-						.parse(dataList.get(i)[0]);
-				cal = Calendar.getInstance();
-				cal.setTimeZone(TimeZone.getTimeZone("GMT"));
-				cal.setTimeInMillis(dataDate.getTime());
-				data.put(cal.getTimeInMillis() / 1000L, dataList.get(i)[column]);
+			
+			URL url = new URL(session.host + "/data");
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("POST");
+			conn.setDoOutput(true);
+			conn.setUseCaches(false);
+			conn.setRequestProperty("Content-Type", "application/json");
+			conn.setRequestProperty("Accept", "application/json");
+			conn.setRequestProperty("Cookie", session.cookie);
+			
+			JSONObject data = new JSONObject();
+			Date dataDate;
+			for (int j = 0; j < 5000 && ((i * 60) < dataList.size()); j++) {
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				SimpleDateFormat dateFormatT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+				dataDate = dateFormat.parse(dataList.get(i * 60)[0]);
+				data.put(dateFormatT.format(dataDate), dataList.get(i * 60)[column]);
+				System.out.println(dateFormatT.format(dataDate));
 				i++;
 			}
-
+			
 			JSONObject object = new JSONObject();
 			object.put(token, data);
-
+		
 			conn.setRequestProperty("Content-Length",
 					Integer.toString(object.toString().length()));
 			conn.getOutputStream().write(object.toString().getBytes());
 			conn.getOutputStream().flush();
-			
+
 			if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
 
-				System.out.println("POST method failed: " + conn.getResponseCode()
-						+ "\t" + conn.getResponseMessage());
+				System.out.println("POST method failed: "
+						+ conn.getResponseCode() + "\t"
+						+ conn.getResponseMessage());
 				return false;
 
-			}
-			else 
+			} else
 				conn.disconnect();
-
 		}
 
-			return true;
+		return true;
 	}
 
 	// Start date may be specified. If it is not the earliest date is used.
@@ -115,41 +111,75 @@ public class SDBStream {
 	// Optionally the aggregation level may be specified as one of the
 	// following:
 	// raw, 1-minute, 5-minute, 15-minute, 1-hour, 3-hour, 6-hour, 1-day,
-	// 1-month, 1-year"""
+	// 1-month, 1-year
 	@SuppressWarnings("unchecked")
 	public boolean getData(SDBSession session, Calendar start_date,
-			Calendar end_date, int agregation_level) throws IOException,
+			Calendar end_date, String agregation_level) throws IOException,
 			ParseException {
-
-		URL url = new URL(session.host + "/data");
+		
+		URL url = new URL(session.host + "/data_download");
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		conn.setRequestMethod("GET");
-		conn.setRequestProperty("Content-length", "0");
+		conn.setRequestMethod("POST");
+		conn.setDoOutput(true);
 		conn.setUseCaches(false);
-		conn.setAllowUserInteraction(false);
-		conn.setConnectTimeout(30000);
-		conn.setReadTimeout(30000);
-		conn.connect();
-		int status = conn.getResponseCode();
+		conn.setRequestProperty("Content-Type", "application/json");
+		conn.setRequestProperty("Accept", "application/json");
+		conn.setRequestProperty("Cookie", session.cookie);
+		
+		JSONObject obj = new JSONObject();
 
-		if (status == 200) {
+		if (agregation_level != null)
+			obj.put("level", agregation_level);
+		else
+			obj.put("level", "raw");
+		
+		if (start_date != null)
+			obj.put("sd", start_date.get(Calendar.YEAR) + "-" + formatValue(start_date.get(Calendar.MONTH)+1,2) + "-" + formatValue(start_date.get(Calendar.DATE),2));
+
+		if (end_date != null)
+			obj.put("ed", end_date.get(Calendar.YEAR) + "-" + formatValue(end_date.get(Calendar.MONTH)+1,2) + "-" + formatValue(end_date.get(Calendar.DATE),2));
+		
+		obj.put("sid", this._id);
+		
+		System.out.println(obj.toJSONString());
+		
+		
+		conn.setRequestProperty("Content-Length",
+				Integer.toString(obj.toString().length()));
+		conn.getOutputStream().write(obj.toString().getBytes());
+		conn.getOutputStream().flush();
+
+		if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
+
+			System.out.println("POST method failed: " + conn.getResponseCode()
+					+ "\t" + conn.getResponseMessage());
+			return false;
+
+		} else {
+
 			JSONParser parser = new JSONParser();
 			BufferedReader bin = new BufferedReader(new InputStreamReader(
-					conn.getInputStream()));
-			JSONArray jsonArray = (JSONArray) parser.parse(bin);
+					new DataInputStream(conn.getInputStream())));
+			JSONObject jsonObject = (JSONObject) parser.parse(bin);
 			bin.close();
+			
+			System.out.println(jsonObject.toJSONString());
+			
+			return true;
+		}
+	}
+	
+	// Returns a string containing value with a fixed number of characters
+	// determined by positions
+	// Fills with "0" on the left side of the value
+	public static String formatValue(int value, int positions) {
+		StringBuilder sbValue = new StringBuilder(Integer.toString(value));
 
-			if (jsonArray.size() > 0) {
-				JSONObject measJSON;
-
-				for (int i = 0; i < jsonArray.size(); i++) {
-					measJSON = (JSONObject) jsonArray.get(i);
-					System.out.println(measJSON.toJSONString());
-				}
-			}
+		while (sbValue.length() < positions) {
+			sbValue.insert(0, "0");
 		}
 
-		return true;
+		return sbValue.toString();
 	}
 
 }

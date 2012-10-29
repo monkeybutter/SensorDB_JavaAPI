@@ -151,6 +151,20 @@ public class SDBExperiment {
 		else
 			return false;
 		
+	}
+	
+	
+	public SDBNode getNodebyName(String name) throws IOException, ParseException {
+
+		SDBNode node = null;
+
+		for (int i = 0; i < nodes.size(); i++) {
+			if (nodes.get(i).name.equals(name)) {
+				node = nodes.get(i);
+			}
+		}
+
+		return node;
 	}	
 	
 }

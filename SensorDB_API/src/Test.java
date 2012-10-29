@@ -1,4 +1,6 @@
 
+import java.util.Calendar;
+
 import au.csiro.cmar.weru.*;
 
 public class Test {
@@ -12,116 +14,50 @@ public class Test {
 	 */
 	public static void main(String[] args) throws Exception {	
 			
-		// Call to constructor with login details
+		
 		SensorDB sensor = new SensorDB("http://phenonet.com:9001", "CMAR", "CMARCMAR");
+				
+		//sensor.experiments.get(0).nodes.get(0).deleteStream(sensor.session, "SPTemp1Physical");
+		//sensor.experiments.get(0).nodes.get(0).deleteStream(sensor.session, "SPVoltsPhysical");
+		//sensor.experiments.get(0).nodes.get(0).deleteStream(sensor.session, "WindSpeedPhysical");
+				
+
+		SDBNode blackMountain = sensor.getExperimentbyName("CMAR").getNodebyName("Black Mountain");
+				
+		SDBStream windSpd = blackMountain.getStreambyName("WindSpeedPhysical");
+				
+		Calendar start_date = Calendar.getInstance();
+		start_date.set(Calendar.YEAR, 2012);
+		start_date.set(Calendar.MONTH, 5);
+		start_date.set(Calendar.DAY_OF_MONTH, 19);
+				
+		Calendar end_date = Calendar.getInstance();
+				end_date.set(Calendar.YEAR, 2012);
+				end_date.set(Calendar.MONTH, 5);
+				end_date.set(Calendar.DAY_OF_MONTH, 22);
+				
+		windSpd.getData(sensor.session, start_date, end_date, "1-hour");
+		//sensor.experiments.get(0).nodes.get(0).deleteStream(sensor.session, "SPPower");
+		//sensor.experiments.get(0).nodes.get(0).deleteStream(sensor.session, "SPTemp1Physical");
+		//sensor.experiments.get(0).nodes.get(0).deleteStream(sensor.session, "SPPowerPhysical");
+				
+				
 		
-		// Create experiment with name CMAR
-		sensor.createExperiment("CMAR", "Australia/Canberra", "Testing Java API to upload CMAR Solar Stations Data", "", "", 0);
-		
-		// Create Node Black Mountain
-		sensor.experiments.get(0).createNode("http://phenonet.com:9001", sensor.session.cookie, "Black Mountain", sensor.experiments.get(0)._id, "Solar Station on Black Mountain", "", "", 0);
-		
-		// Create Stream Temperature 1
-		sensor.experiments.get(0).nodes.get(0).createStream(sensor.session, "Temperature1", sensor.experiments.get(0).nodes.get(0)._id, sensor.getMeasurementId("Celsius"), "Something", "", "");
-		
-		
-		// CSV Files used for the sample have the format BMmm-dd
-		// where mm indicates the month and dd is the day
-		
-		// We loop over the 30 files of June
+		blackMountain.createStream(sensor.session, "WindSpeedPhysical", blackMountain._id, sensor.getMeasurementId("Celsius"), "Something", "", "");
 		System.out.println("First");
-		for (int i=1; i<=30; i++) {
+		for (int i=1; i<=1; i++) {
 			StringBuilder file = new StringBuilder("/home/roz016/workspace/SolarProject/CSV/BM06-01.csv");
 			file.replace(45, 47, formatValue(i,2));
 			System.out.println(file.toString());
-			// postData of the csv file 5th column (temperature1)
-			sensor.experiments.get(0).nodes.get(0).streams.get(0).postData(sensor.session, file.toString(), 5);
+			//blackMountain.getStreambyName("SPTemp1Physical").postData(sensor.session, file.toString(), 5);
+			blackMountain.getStreambyName("WindSpeedPhysical").postData(sensor.session, file.toString(), 16);
 		}
 		
-		// We loop over the 31 files of July
-		System.out.println("Second");
-		for (int i=1; i<=31; i++) {
-			StringBuilder file = new StringBuilder("/home/roz016/workspace/SolarProject/CSV/BM07-01.csv");
-			file.replace(45, 47, formatValue(i,2));
-			System.out.println(file.toString());
-			// postData of the csv file 5th column (temperature1)
-			sensor.experiments.get(0).nodes.get(0).streams.get(0).postData(sensor.session, file.toString(), 5);
-		}
-		
-		// We loop over the 31 files of August
-		System.out.println("Third");
-		for (int i=1; i<=31; i++) {
-			StringBuilder file = new StringBuilder("/home/roz016/workspace/SolarProject/CSV/BM08-01.csv");
-			file.replace(45, 47, formatValue(i,2));
-			System.out.println(file.toString());
-			// postData of the csv file 5th column (temperature1)
-			sensor.experiments.get(0).nodes.get(0).streams.get(0).postData(sensor.session, file.toString(), 5);
-		}
-		
-		
-		
-		/*
-		
-		List<SDBMeasurement> meas = sensor.getMeasurements();
-		
-		for (int i = 0; i < meas.size(); i ++) {
-			System.out.println(meas.get(i).name + " " + meas.get(i)._id);
-		}
-		
-		List<SDBMeasurement> array = sensor.getMeasurements();
-		
-		System.out.println(array.get(0).description);
-		System.out.println(array.get(1).description);
-		System.out.println(array.get(2).description);
-		System.out.println(array.get(3).description);
-		System.out.println(array.get(4).description);
-		System.out.println(array.get(5).description);
-		System.out.println(array.get(6).description);
-		
-		//sensor.deleteExperiment("CMAR");
-		//sensor.createExperiment("CMAR", "Australia/Canberra", "Testing Java API to upload CMAR Solar Stations Data", "", "", 0);
-		//sensor.experiments.get(0).createNode("http://phenonet.com:9001", sensor.cookie, "Black Mountain", sensor.experiments.get(0)._id, "Solar Station on Black Mountain", "", "", 0);
-		//sensor.experiments.get(0).nodes.get(0).createStream("http://phenonet.com:9001", sensor.cookie, "Temperature1", sensor.experiments.get(0).nodes.get(0)._id, "502f9f0a515a21b8bdc81d27", "Something", "", "");
-		//sensor.experiments.get(0).nodes.get(0).streams.get(0).postData("http://phenonet.com:9001", sensor.cookie);
-		//sensor.experiments.get(0).nodes.get(0).deleteStream("http://phenonet.com:9001", sensor.cookie, "Temperature");
-		
-		
-		//System.out.println(sensor.getMeasurements().toJSONString());
-		
-		for (int i = 0; i < sensor.experiments.size(); i++) {
-			System.out.println("Experiment " + (i+1) + ": " + sensor.experiments.get(i).name);
-			for (int j = 0; j < sensor.experiments.get(i).nodes.size(); j++) {
-				System.out.println("   Node " + (j + 1) + ": " + sensor.experiments.get(i).nodes.get(j).name);
-				for (int k = 0; k < sensor.experiments.get(i).nodes.get(j).streams.size(); k++) {
-					System.out.println("      Stream " + (k + 1) + ": " + sensor.experiments.get(i).nodes.get(j).streams.get(k).name);
-				}
-			}
-		}
-		/*
-		sensor.deleteExperiment("TestExperiment");
-		
-		for (int i = 0; i < sensor.experiments.size(); i++) {
-			System.out.println("Experiment " + (i+1) + ": " + sensor.experiments.get(i).name);
-			for (int j = 0; j < sensor.experiments.get(i).nodes.size(); j++) {
-				System.out.println("   Node " + (j + 1) + ": " + sensor.experiments.get(i).nodes.get(j).name);
-			}
-		}
-		
-		// Test for login, creating and deleting an user
-		
-		SensorDB sensor = new SensorDB("http://phenonet.com:9001", "MonkeyButter", "Aemet2005");
-		List<SDBUser> array = sensor.getUsers();
-		System.out.println("There are " + array.size() + " registered users in the server");
-		
-		JSONObject output = sensor.register("testdummy", "testdummy", "test@dum.my", null, null, null);
-		
-		array = sensor.getUsers();
-		System.out.println("There are " + array.size() + " registered users in the server");
-		
-		output = sensor.remove("testdummy", "testdummy");
-		array = sensor.getUsers();
-		System.out.println("There are " + array.size() + " registered users in the server");
-		 */		
+				
+		//blackMountain.createStream(sensor.session, "WindSpeedPhysical", blackMountain._id, sensor.getMeasurementId("Metres per Second (m/s)"), "Something", "", "");
+		//blackMountain.createStream(sensor.session, "SPVoltsPhysical", blackMountain._id, sensor.getMeasurementId("Voltage (V)"), "Something", "", "");
+				
+		//sensor.createExperiment("CMAR", "UTC", "Testing Java API to upload CMAR Solar Stations Data", "", "", 0);
 		
 	}
 	
@@ -135,5 +71,5 @@ public class Test {
 		return sbValue.toString();
 	}
 
-
+//
 }
