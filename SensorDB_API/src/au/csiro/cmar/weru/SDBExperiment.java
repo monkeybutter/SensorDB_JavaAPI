@@ -56,11 +56,11 @@ public class SDBExperiment {
 	
 
 	@SuppressWarnings("unchecked")
-	public boolean createNode(String host, String cookie, String name, String eid, String description, String website, String picture, int public_access) throws IOException, ParseException {
+	public SDBNode createNode(String host, String cookie, String name, String eid, String description, String website, String picture, int public_access) throws IOException, ParseException {
 		
 		for (int i = 0; i<nodes.size(); i++) {
 			if (nodes.get(i).name.equals(name))
-				return false;
+				return null;
 		}
 		
 		URL url = new URL(host + "/nodes");
@@ -98,7 +98,7 @@ public class SDBExperiment {
 
 			System.out.println("POST method failed: " + conn.getResponseCode()
 					+ "\t" + conn.getResponseMessage());
-			return false;
+			return null;
 
 		} else {
 
@@ -111,7 +111,7 @@ public class SDBExperiment {
 			SDBNode newNode = new SDBNode(jsonObject);
 			nodes.add(newNode);
 			
-			return true;
+			return newNode;
 		}
 	}
 	
