@@ -55,11 +55,11 @@ public class SDBNode {
 	
 	
 	@SuppressWarnings("unchecked")
-	public boolean createStream(SDBSession session, String name, String nid, String mid, String description, String website, String picture) throws IOException, ParseException {
+	public SDBStream createStream(SDBSession session, String name, String nid, String mid, String description, String website, String picture) throws IOException, ParseException {
 		
 		for (int i = 0; i<streams.size(); i++) {
 			if (streams.get(i).name.equals(name))
-				return false;
+				return null;
 		}
 		
 		URL url = new URL(session.host + "/streams");
@@ -95,7 +95,7 @@ public class SDBNode {
 
 			System.out.println("POST method failed: " + conn.getResponseCode()
 					+ "\t" + conn.getResponseMessage());
-			return false;
+			return null;
 
 		} else {
 
@@ -108,7 +108,7 @@ public class SDBNode {
 			SDBStream newStream = new SDBStream(jsonObject);
 			streams.add(newStream);
 			
-			return true;
+			return newStream;
 		}
 	}
 	
