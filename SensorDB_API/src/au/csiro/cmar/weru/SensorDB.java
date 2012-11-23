@@ -228,13 +228,13 @@ public class SensorDB {
 	}
 
 	@SuppressWarnings("unchecked")
-	public boolean createExperiment(String name, String timezone,
+	public SDBExperiment createExperiment(String name, String timezone,
 			String description, String website, String picture,
 			int public_access) throws IOException, ParseException {
 
 		for (int i = 0; i < experiments.size(); i++) {
 			if (experiments.get(i).name.equals(name))
-				return false;
+				return null;
 		}
 
 		URL url = new URL(session.host + "/experiments");
@@ -271,7 +271,7 @@ public class SensorDB {
 
 			System.out.println("POST method failed: " + conn.getResponseCode()
 					+ "\t" + conn.getResponseMessage());
-			return false;
+			return null;
 
 		} else {
 
@@ -284,7 +284,7 @@ public class SensorDB {
 			SDBExperiment experiment = new SDBExperiment(jsonObject);
 			experiments.add(experiment);
 
-			return true;
+			return experiment;
 		}
 	}
 
